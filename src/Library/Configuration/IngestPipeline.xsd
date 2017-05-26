@@ -1,0 +1,870 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="IngestPipeline"
+    targetNamespace="urn:IngestPipeline:v1"
+    elementFormDefault="qualified"
+    xmlns="urn:IngestPipeline:v1"
+    xmlns:mstns="urn:IngestPipeline:v1"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:odatax="http://schemas.microsoft.com/services/telemetry/2014/02/OdataExpressionModel"
+>
+  <xs:import namespace="http://schemas.microsoft.com/services/telemetry/2014/02/OdataExpressionModel"
+             schemaLocation="..\Filtering\ODataExpressionModel.xsd" />
+
+  <xs:element name="Pipeline" type="Pipeline" />
+  <xs:element name="Dimension" type="Dimension"  />
+  <xs:element name="BandingDimension" type="BandingDimension" />
+  <xs:element name="Fact" type="Fact" />
+  <xs:element name="Aggregate" type="Aggregate" />
+  <xs:element name="Stream" type="Stream" />
+  <xs:element name="EntityType" type="EntityType" />
+  <xs:element name="Purge" type="Purge" />
+  <xs:element name="LoadMap" type="LoadMap" />
+  <xs:element name="AzureBlobSet" type="AzureBlobSet" />
+
+  <xs:complexType name="RootObject" abstract="true">
+    <xs:attribute name="Name" type="xs:Name" use="required" />
+    <xs:attribute name="Namespace" type="xs:Name" use="required" />
+  </xs:complexType>
+
+  <xs:complexType name="Pipeline">
+    <xs:complexContent>
+      <xs:extension base="RootObject">
+        <xs:group ref="EngineTypes" maxOccurs="unbounded" />
+        <xs:attribute name="IntervalInSeconds" type="xs:int" use="required" />
+        <xs:attribute name="PipelineType" type="PipelineType" use="optional" default="All" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:group name="EngineTypes">
+    <xs:choice>
+      <xs:element name="Extract" type="ExtractEngine" />
+      <xs:element name="Load" type="LoadEngine" />
+      <xs:element name="Aggregation" type="AggregationEngine" />
+      <xs:element name="Purge" type="PurgeEngine" />
+      <xs:element name="Execution" type="ExecutionEngine" />
+      <xs:element name="ProcedureLoad" type="ProcedureLoadEngine" />
+      <xs:element name="ProcedurePurge" type="ProcedurePurgeEngine" />
+      <xs:element name="ProcedureAggregate" type="ProcedureAggregateEngine" />
+    </xs:choice>
+  </xs:group>
+
+  <xs:group name="FeedTypes">
+    <xs:choice>
+      <xs:element name="EntityType" type="EntityTypeReference" />
+      <xs:element name="Stream" type="StreamReference" />
+      <xs:element name="AzureBlobSet" type="AzureBlobSetReference" />
+    </xs:choice>
+  </xs:group>
+
+  <xs:group name="AuthenticationMethod">
+    <xs:choice>
+      <xs:element name="BearerToken" type="BearerToken" />
+      <xs:element name="CurrentUser" type="CurrentUser" />
+    </xs:choice>
+  </xs:group>
+
+  <xs:complexType name="Engine" abstract="true">
+    <xs:complexContent>
+      <xs:extension base="NamedObject">
+        <xs:sequence>
+          <xs:element name="OnError" type="ExecutableReference" minOccurs="0" />
+        </xs:sequence>
+        <xs:attribute name="ExecutionType" type="ExecutionType" use="optional" default="Serial" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="ProcedureEngine" abstract="true">
+    <xs:complexContent>
+      <xs:extension base="Engine" />
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="ProcedureLoadEngine">
+    <xs:complexContent>
+      <xs:extension base="ProcedureEngine">
+        <xs:sequence>
+          <xs:element name="LoadProcedure" type="LoadProcedure" maxOccurs="unbounded" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="ProcedureAggregateEngine">
+    <xs:complexContent>
+      <xs:extension base="ProcedureEngine">
+        <xs:sequence>
+          <xs:element name="AggregationProcedure" type="LoadProcedure" maxOccurs="unbounded" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="ProcedurePurgeEngine">
+    <xs:complexContent>
+      <xs:extension base="ProcedureEngine">
+        <xs:sequence>
+          <xs:element name="PurgeProcedure" type="LoadProcedure" maxOccurs="unbounded" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="ExecutionEngine">
+    <xs:complexContent>
+      <xs:extension base="Engine">
+        <xs:choice maxOccurs="unbounded">
+          <xs:element name="Operation" type="OperationReference" />
+          <xs:element name="SqlWrite" type="SqlWriterReference" />
+          <xs:element name="StreamFilter" type="StreamFilterReference" />
+          <xs:element name="AzureWrite" type="AzureWriterReference" />
+        </xs:choice>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="ExtractEngine">
+    <xs:complexContent>
+      <xs:extension base="Engine">
+        <xs:sequence>
+          <xs:element name="StagingArea" type="StagingArea" minOccurs="0" />
+          <xs:group ref="FeedTypes" maxOccurs="unbounded" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="EgressEngine">
+    <xs:complexContent>
+      <xs:extension base="Engine">
+        <xs:sequence>
+          <xs:element name="Paths" type="SourceTargetPath" minOccurs="1" maxOccurs="unbounded" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="LoadEngine">
+    <xs:complexContent>
+      <xs:extension base="Engine">
+        <xs:sequence>
+          <xs:element name="Map" type="LoadMapReference" maxOccurs="unbounded" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="AggregationEngine">
+    <xs:complexContent>
+      <xs:extension base="Engine">
+        <xs:sequence>
+          <xs:element name="Aggregate" type="AggregateReference" maxOccurs="unbounded" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="PurgeEngine">
+    <xs:complexContent>
+      <xs:extension base="Engine">
+        <xs:sequence>
+          <xs:element name="Purge" type="PurgeReference" maxOccurs="unbounded" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="LoadProcedure">
+    <xs:complexContent>
+      <xs:extension base="FullyQualifiedNamedObject">
+        <xs:choice minOccurs="0">
+          <xs:group ref="FeedTypes" />
+          <xs:element name="Fact" type="FactReference" />
+          <xs:element name="Dimension" type="DimensionReference" />
+        </xs:choice>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="LoadMap">
+    <xs:complexContent>
+      <xs:extension base="RootObject">
+        <xs:sequence>
+          <xs:choice>
+            <xs:element name="StreamReference" type="StreamReference" />
+            <xs:element name="EntityTypeReference" type="EntityTypeReference" />
+            <xs:element name="AzureBlobSetReference" type="AzureBlobSetReference" />
+          </xs:choice>
+          <xs:choice>
+            <xs:element name="FactReference" type="FactReference" />
+            <xs:element name="DimensionReference" type="DimensionReference" />
+            <xs:element name="EntityTypeReference" type="EntityTypeReference" />
+          </xs:choice>
+          <xs:element name="Mappings" type="Mappings" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="Mappings">
+    <xs:choice maxOccurs="unbounded">
+      <xs:element name="PropertyMap" type="SimpleMap" />
+      <xs:element name="ParameterMap" type="ParameterMap" />
+      <xs:element name="DimensionMap" type="DimensionMap" />
+    </xs:choice>
+  </xs:complexType>
+
+  <xs:complexType name="RelationalBase" abstract="true">
+    <xs:complexContent>
+      <xs:extension base="RootObject" />
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="Feed" abstract="true">
+    <xs:complexContent>
+      <xs:extension base="RelationalBase">
+        <xs:sequence>
+          <xs:element name="Key" type="Key" minOccurs="0" />
+          <xs:element name="Property" type="Property" minOccurs="0" maxOccurs="unbounded" />
+          <xs:element name="Filter" type="odatax:FilterType" minOccurs="0" />
+        </xs:sequence>
+        <xs:attribute name="Abstract" type="xs:boolean" use="optional" default="false" />
+        <xs:attribute name="Base" type="xs:Name" use="optional" />
+        <xs:attribute name="MaximumDays" type="xs:int" use="optional" default="90" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="EntityType">
+    <xs:complexContent>
+      <xs:extension base="Feed">
+        <xs:sequence>
+          <xs:element name="NavigationProperty" type="NavigationProperty" minOccurs="0" maxOccurs="unbounded" />
+          <xs:element name="Watermark" type="PropertyRef" minOccurs="0" />
+          <xs:element name="Operation" type="odatax:ODataOperationType" minOccurs="0" />
+          <xs:group ref="AuthenticationMethod" minOccurs="1" maxOccurs="1" />
+        </xs:sequence>
+        <xs:attribute name="ServiceUrl" type="xs:anyURI" use="optional" />
+        <xs:attribute name="EntitySet" type="xs:Name" use="optional" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="Stream">
+    <xs:complexContent>
+      <xs:extension base="Feed">
+        <xs:sequence>
+          <xs:element name="Partition" type="PropertyRef" minOccurs="0" />
+        </xs:sequence>
+        <xs:attribute name="Prefix" type="xs:string" use="optional" />
+        <xs:attribute name="UrlFormat" type="xs:string" use="optional" />
+        <xs:attribute name="VcRoot" type="xs:string" use="optional" />
+        <xs:attribute name="VcPath" type="xs:string" use="optional" />
+        <xs:attribute name="StreamUpdateFrequency" type="TimePeriodType" use="optional" />
+        <xs:attribute name="ExportMode" type="ExportMode" use="optional" default="ExportClient" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="AzureBlobSet">
+    <xs:complexContent>
+      <xs:extension base="Feed">
+        <xs:sequence>
+          <xs:element name="Partition" type="PropertyRef" minOccurs="0" />
+        </xs:sequence>
+        <xs:attribute name="Prefix" type="xs:string" use="optional" />
+        <xs:attribute name="UrlFormat" type="xs:string" use="optional" />
+        <xs:attribute name="MetadataUrlFormat" type="xs:string" use="optional" />
+        <xs:attribute name="StreamUpdateFrequency" type="TimePeriodType" use="optional" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="Purge">
+    <xs:complexContent>
+      <xs:extension base="RootObject">
+        <xs:sequence>
+          <xs:element name="Grain" type="Grain" />
+        </xs:sequence>
+        <xs:attribute name="Type" type="PurgeType" use="required" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="FactBase" abstract="true">
+    <xs:complexContent>
+      <xs:extension base="RelationalBase">
+        <xs:attribute name="RetentionDays" type="xs:int" use="required" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="Aggregate">
+    <xs:complexContent>
+      <xs:extension base="FactBase">
+        <xs:sequence>
+          <xs:element name="Properties" type="PropertyList" minOccurs="0" />
+          <xs:element name="ComputedProperties" type="ComputedPropertyList" minOccurs="0" />
+          <xs:element name="Grain" type="Grain" />
+          <xs:element name="GroupBy" type="GroupBy" />
+        </xs:sequence>
+        <xs:attribute name="TimeAggregate" type="xs:boolean" use="optional" default="false" />
+        <xs:attribute name="TimePeriod" type="TimePeriodType" use="optional" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="Fact">
+    <xs:complexContent>
+      <xs:extension base="FactBase">
+        <xs:sequence>
+          <xs:element name="KeyProperties" type="KeyPropertyList" minOccurs="0" />
+          <xs:element name="Dimensions" type="DimensionReferenceList" minOccurs="0" />
+          <xs:element name="Properties" type="PropertyList" minOccurs="0" />
+          <xs:element name="Measures" type="MeasureList" minOccurs="0" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="MapBase" abstract="true">
+    <xs:attribute name="From" type="xs:Name" use="required" />
+    <xs:attribute name="To" type="xs:Name" use="required" />
+  </xs:complexType>
+
+  <xs:complexType name="ValueMappings">
+    <xs:sequence>
+      <xs:element name="ValueMap" type="ValueMap" maxOccurs="unbounded" />
+    </xs:sequence>
+    <xs:attribute name="FromType" type="DataType" use="required" />
+    <xs:attribute name="ToType" type="DataType" use="required" />
+  </xs:complexType>
+
+  <xs:complexType name="SimpleMap">
+    <xs:complexContent>
+      <xs:extension base="MapBase">
+        <xs:sequence>
+          <xs:element name="ValueMappings" type="ValueMappings" minOccurs="0" maxOccurs="1" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="ParameterMap">
+    <xs:complexContent>
+      <xs:extension base="SimpleMap" />
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="ValueMap">
+    <xs:complexContent>
+      <xs:extension base="MapBase" />
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="DimensionMap">
+    <xs:complexContent>
+      <xs:extension base="MapBase">
+        <xs:sequence>
+          <xs:element name="PropertyMap" type="SimpleMap" maxOccurs="unbounded" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="Grain">
+    <xs:sequence>
+      <xs:element name="FactReference" type="FactReference" />
+      <xs:element name="TimeRef" type="TimeRef" minOccurs="0" />
+      <xs:element name="Filter" type="odatax:FilterType" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="GroupBy">
+    <xs:sequence>
+      <xs:element name="Dimensions" type="DimensionReferenceList" minOccurs="0" />
+      <xs:element name="Properties" type="PropertyRefList" minOccurs="0" />
+      <xs:element name="ComputedProperties" type="ComputedPropertyList" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="DimensionBase" abstract="true">
+    <xs:complexContent>
+      <xs:extension base="RelationalBase"></xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="Dimension">
+    <xs:complexContent>
+      <xs:extension base="DimensionBase">
+        <xs:sequence>
+          <xs:element name="Key" type="Key" minOccurs="0" />
+          <xs:element name="Property" type="Property" minOccurs="0" maxOccurs="unbounded" />
+          <xs:element name="Constraint" type="Constraint" minOccurs="0" maxOccurs="unbounded" />
+        </xs:sequence>
+        <xs:attribute name="Abstract" type="xs:boolean" use="optional" default="false" />
+        <xs:attribute name="Base" type="xs:Name" use="optional" />
+        <xs:attribute name="DiscoveryMode" type="DiscoveryModeType" use="optional" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="BandingDimension">
+    <xs:complexContent>
+      <xs:extension base="DimensionBase">
+        <xs:sequence>
+          <xs:element name="Dimension" type="DimensionReference" maxOccurs="unbounded" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="Key">
+    <xs:sequence>
+      <xs:element name="PropertyRef" type="PropertyRef" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="NamedObject" abstract="true">
+    <xs:attribute name="Name" type="xs:Name" use="required" />
+  </xs:complexType>
+
+  <xs:complexType name="FullyQualifiedNamedObject" abstract="true">
+    <xs:complexContent>
+      <xs:extension base="NamedObject">
+        <xs:attribute name="Namespace" type="xs:Name" use="required" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="NamedAndTypedProperty" abstract="true">
+    <xs:complexContent>
+      <xs:extension base="NamedObject">
+        <xs:attribute name="Type" type="DataType" use="required" />
+        <xs:attribute name="Size" type="xs:int" use="optional" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="PropertyRef">
+    <xs:complexContent>
+      <xs:extension base="NamedObject"></xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="Property">
+    <xs:complexContent>
+      <xs:extension base="NamedAndTypedProperty">
+        <xs:attribute name="Nullable" type="xs:boolean" use="optional" default="true" />
+        <xs:attribute name="Default" type="xs:string" use="optional" />
+        <xs:attribute name="Unique" type="xs:boolean" use="optional" />
+        <xs:attributeGroup ref="IdentityProperty" />
+        <xs:attributeGroup ref="ComputedPropertyValue" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="NavigationProperty">
+    <xs:complexContent>
+      <xs:extension base="NamedObject">
+        <xs:sequence>
+          <xs:element name="TargetType" type="EntityTypeReference" />
+        </xs:sequence>
+        <xs:attribute name="Association" type="AssociationType" use="required" />
+        <xs:attribute name="Nullable" type="xs:boolean" use="optional" default="true" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="Constraint">
+    <xs:complexContent>
+      <xs:extension base="NamedObject">
+        <xs:sequence>
+          <xs:element name="PropertyRef" type="PropertyRef" maxOccurs="unbounded" />
+        </xs:sequence>
+        <xs:attribute name="Type" type="ConstraintType" use="required" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="KeyProperty">
+    <xs:complexContent>
+      <xs:extension base="NamedAndTypedProperty">
+        <xs:attribute name="Default" type="xs:string" use="optional" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="BasicComputedProperty" abstract="true">
+    <xs:complexContent>
+      <xs:extension base="NamedAndTypedProperty">
+        <xs:attribute name="Apply" type="ComputationType" use="optional" />
+        <xs:attribute name="PropertyRef" type="xs:Name" use="optional" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="Measure">
+    <xs:complexContent>
+      <xs:extension base="ComputedProperty">
+        <xs:attribute name="Nullable" type="xs:boolean" use="optional" default="true" />
+        <xs:attribute name="Default" type="xs:string" use="optional" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="ComputedProperty">
+    <xs:complexContent>
+      <xs:extension base="BasicComputedProperty">
+        <xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:element name="Mult" type="Multiplication" />
+            <xs:element name="Div" type="Division" />
+            <xs:element name="Cast" type="Cast" />
+          </xs:choice>
+        </xs:sequence>
+        <xs:attribute name="IsMetric" type="xs:boolean" use="optional" default="true" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="Computation" abstract="true"></xs:complexType>
+
+  <xs:complexType name="Division">
+    <xs:complexContent>
+      <xs:extension base="Computation">
+        <xs:sequence>
+          <xs:element name="Numerator" type="Divisor" />
+          <xs:element name="Denominator" type="Divisor" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="Multiplication">
+    <xs:complexContent>
+      <xs:extension base="Computation">
+        <xs:sequence>
+          <xs:element name="Multiplicand" type="Divisor" maxOccurs="unbounded" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="Udt">
+    <xs:complexContent>
+      <xs:extension base="Computation">
+        <xs:sequence>
+          <xs:element name="AggregateFunction" type="xs:string" />
+          <xs:element name="ToBinary" type="xs:string" />
+          <xs:element name="FromBinary" type="xs:string" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="Cast">
+    <xs:complexContent>
+      <xs:extension base="Computation">
+        <xs:sequence>
+          <xs:element name="TypeRef" type="TypeRef" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="DimensionReferenceList">
+    <xs:sequence>
+      <xs:element name="DimensionReference" type="DimensionReference" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="MeasureList">
+    <xs:sequence>
+      <xs:element name="Measure" type="Measure" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="KeyPropertyList">
+    <xs:sequence>
+      <xs:element name="KeyProperty" type="KeyProperty" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="PropertyRefList">
+    <xs:sequence>
+      <xs:element name="PropertyRef" type="PropertyRef" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="PropertyList">
+    <xs:sequence>
+      <xs:element name="Property" type="Property" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ComputedPropertyList">
+    <xs:sequence>
+      <xs:element name="ComputedProperty" type="ComputedProperty" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="TimeRef">
+    <xs:complexContent>
+      <xs:extension base="PropertyRef">
+        <xs:attribute name="Days" type="xs:unsignedInt" use="optional" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="TypeRef">
+    <xs:complexContent>
+      <xs:extension base="NamedObject"/>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="Divisor">
+    <xs:complexContent>
+      <xs:extension base="BasicComputedProperty"></xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="StagingArea">
+    <xs:sequence>
+      <xs:element name="Segment" type="Segment" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+    <xs:attribute name="Prefix" type="xs:Name" use="optional" />
+    <xs:attribute name="Suffix" type="xs:Name" use="optional" />
+    <xs:attribute name="Target" type="xs:Name" use="optional" default="Reporting" />
+  </xs:complexType>
+
+  <xs:complexType name="SourceTargetPath">
+    <xs:sequence>
+      <xs:group ref="FeedTypes" maxOccurs="2" minOccurs="2" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="Segment">
+    <xs:attribute name="Number" type="xs:int" use="required" />
+    <xs:attribute name="Catalog" type="xs:string" use="required" />
+    <xs:attribute name="DataSource" type="xs:string" use="required" />
+  </xs:complexType>
+
+  <xs:complexType name="ExecutableReference" abstract="true">
+    <xs:complexContent>
+      <xs:extension base="FullyQualifiedNamedObject" />
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="OperationReference">
+    <xs:complexContent>
+      <xs:extension base="ExecutableReference" />
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="SqlWriterReference">
+    <xs:complexContent>
+      <xs:extension base="ExecutableReference" />
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="AzureWriterReference">
+    <xs:complexContent>
+      <xs:extension base="ExecutableReference" />
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="StreamFilterReference">
+    <xs:complexContent>
+      <xs:extension base="ExecutableReference" />
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="EntitySetWriterReference">
+    <xs:complexContent>
+      <xs:extension base="ExecutableReference" />
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="FactReference">
+    <xs:complexContent>
+      <xs:extension base="FeedReference"/>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="FeedReference" abstract="true">
+    <xs:complexContent>
+      <xs:extension base="FullyQualifiedNamedObject" />
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="StreamReference">
+    <xs:complexContent>
+      <xs:extension base="FeedReference"/>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="AzureBlobSetReference">
+    <xs:complexContent>
+      <xs:extension base="FeedReference"/>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="EntityTypeReference">
+    <xs:complexContent>
+      <xs:extension base="FeedReference"/>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="DimensionReference">
+    <xs:complexContent>
+      <xs:extension base="FeedReference"></xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="AggregateReference">
+    <xs:complexContent>
+      <xs:extension base="FeedReference"></xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="PurgeReference">
+    <xs:complexContent>
+      <xs:extension base="FullyQualifiedNamedObject"></xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="LoadMapReference">
+    <xs:complexContent>
+      <xs:extension base="FullyQualifiedNamedObject"></xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="Authentication" abstract="true" />
+
+  <xs:complexType name="CurrentUser">
+    <xs:complexContent>
+      <xs:extension base="Authentication">
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="BearerToken">
+    <xs:complexContent>
+      <xs:extension base="Authentication">
+        <xs:attribute name="ClientId" type="xs:Name" />
+        <xs:attribute name="ClientSecret" type="xs:Name" />
+        <xs:attribute name="Audience" type="xs:Name" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:attributeGroup name="IdentityProperty">
+    <xs:attribute name="AutoIncrement" type="xs:boolean" use="optional" default="false" />
+    <xs:attribute name="InitialSeed" type="xs:unsignedInt" use="optional" />
+    <xs:attribute name="Increment" type="xs:unsignedInt" use="optional" />
+  </xs:attributeGroup>
+
+  <xs:attributeGroup name="ComputedPropertyValue">
+    <xs:attribute name="Computed" type="xs:boolean" use="optional" default="false" />
+    <xs:attribute name="Formula" type="xs:string" use="optional" />
+  </xs:attributeGroup>
+
+  <xs:simpleType name="ConstraintType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Unique" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="TimePeriodType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Hourly" />
+      <xs:enumeration value="Daily" />
+      <xs:enumeration value="Weekly" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ExecutionType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="MutuallyExclusive" />
+      <xs:enumeration value="Serial" />
+      <xs:enumeration value="Parallel" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ComputationType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Sum" />
+      <xs:enumeration value="Max" />
+      <xs:enumeration value="Min" />
+      <xs:enumeration value="Latest" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="PurgeType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="PhasedOut" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="DiscoveryModeType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Unset" />
+      <xs:enumeration value="LateArriving" />
+      <xs:enumeration value="ExternalSystemOfRecord" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ParameterName">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="\$\([A-Za-z0-9]+\)" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="AssociationType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="OneToOne" />
+      <xs:enumeration value="OneToMany" />
+      <xs:enumeration value="ManyToOne" />
+      <xs:enumeration value="ManyToMany" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="PipelineType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="All" />
+      <xs:enumeration value="DefaultShard" />
+      <xs:enumeration value="NonDefaultShards" />
+      <xs:enumeration value="NotApplicable" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="DataType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="string" />
+      <xs:enumeration value="int" />
+      <xs:enumeration value="long" />
+      <xs:enumeration value="short" />
+      <xs:enumeration value="byte" />
+      <xs:enumeration value="datetime" />
+      <xs:enumeration value="datetimeoffset" />
+      <xs:enumeration value="guid" />
+      <xs:enumeration value="bool" />
+      <xs:enumeration value="float" />
+      <xs:enumeration value="double" />
+      <xs:enumeration value="decimal" />
+      <xs:enumeration value="varbinary" />
+      <xs:enumeration value="rowversion" />
+      <xs:enumeration value="char" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ExportMode">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="ExportClient" />
+      <xs:enumeration value="DownloadAndParse" />
+    </xs:restriction>
+  </xs:simpleType>
+
+</xs:schema>

@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>Infrastructure.DataAccess</id>
+    <version>1.4.3</version>
+    <title>Lensgrinder Infrastructure DataAccess</title>
+    <authors>Lensgrinder</authors>
+    <owners>Lensgrinder</owners>
+    <licenseUrl>https://dataaccess.azurewebsites.net/license</licenseUrl>
+    <projectUrl>https://lensgrinder.visualstudio.com/_git/DataAccess</projectUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <description>Lensgrinder's flexible data access utilities.</description>
+    <releaseNotes>Please visit https://dataaccess.azureweb.net/release/1.4.3/ to view the release notes.</releaseNotes>
+    <copyright>© Lensgrinder, Ltd. All rights reserved.</copyright>
+    <language>en-US</language>
+    <tags>Lensgrinder DataAccess OData</tags>
+    <dependencies>
+      <!--<dependency id="Microsoft.AspNet.WebApi.Client" version="5.2.3" />
+      <dependency id="Microsoft.AspNet.WebApi.Core" version="5.2.3" />
+      <dependency id="Microsoft.OData.Core" version="7.0.0" />
+      <dependency id="Microsoft.OData.Edm" version="7.0.0" />
+      <dependency id="Microsoft.AspNet.OData" version="6.0.0" />
+
+      <dependency id="EntityFramework" version="6.1.3" />
+      <dependency id="MySql.Data" version="6.9.9" />
+      <dependency id="WindowsAzure.Storage" version="4.3.0" />
+
+      <dependency id="FastMember" version="1.0.0.11" />
+      <dependency id="Newtonsoft.Json" version="6.0.8" />
+      <dependency id="Ninject" version="3.2.2.0" />
+
+      <dependency id="EnterpriseLibrary.TransientFaultHandling" version="6.0.1304.0" />
+      <dependency id="EnterpriseLibrary.TransientFaultHandling.Data" version="6.0.1304.1" />
+      <dependency id="Microsoft.Azure.SqlDatabase.ElasticScale.Client" version="1.3.2" />
+      <dependency id="Microsoft.WindowsAzure.ConfigurationManager" version="1.8.0" />-->
+
+    </dependencies>
+    <frameworkAssemblies>
+      <frameworkAssembly assemblyName="System.Net.Http" targetFramework=".NETFramework4.5" />
+    </frameworkAssemblies>
+  </metadata>
+</package>

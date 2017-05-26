@@ -1,0 +1,590 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="MrdlOdata"
+    targetNamespace="http://schemas.microsoft.com/services/telemetry/2014/02/OdataExpressionModel"
+    elementFormDefault="qualified"
+    xmlns="http://schemas.microsoft.com/services/telemetry/2014/02/OdataExpressionModel"
+    xmlns:mstns="http://schemas.microsoft.com/services/telemetry/2014/02/OdataExpressionModel"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+>
+  <!-- Global Elements -->
+  <xs:element name="ODataQuery" type="mstns:ODataQueryType" />
+  <xs:element name="BatchRequest" type="mstns:BatchRequestType" />
+  <xs:element name="Where" type="FilterType" />
+  
+  <!-- Global Complex Types -->
+  <xs:complexType name="QueryType" abstract="true">
+    <xs:attribute name="Name" type="xs:Name" use="optional" />
+    <xs:attribute name="Namespace" type="xs:Name" use="optional" />
+  </xs:complexType>
+
+  <xs:complexType name="BatchRequestType">
+    <xs:complexContent>
+      <xs:extension base="mstns:QueryType">
+        <xs:choice>
+          <xs:element name="Request" type="mstns:BatchedQueryType"  maxOccurs="unbounded" />
+          <xs:element name="ChangeSet" type="mstns:ChangeSetType"  maxOccurs="unbounded" />
+        </xs:choice>
+        <xs:attribute name="HostAndODataPath" type="xs:anyURI" use="required" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="BatchedQueryType">
+    <xs:complexContent>
+      <xs:extension base="mstns:ODataQueryType">
+        <xs:sequence>
+          <xs:element name="Payload" type="xs:string" minOccurs="0" />
+        </xs:sequence>
+        <xs:attribute name="Method" type="MethodType" use="required" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="ChangeSetType">
+    <xs:complexContent>
+      <xs:extension base="mstns:QueryType">
+        <xs:sequence>
+          <xs:element name="Request" type="mstns:BatchedQueryType" maxOccurs="unbounded" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="ODataQueryType" abstract="false">
+    <xs:complexContent>
+      <xs:extension base="mstns:QueryType">
+        <xs:sequence>
+          <xs:choice>
+            <xs:element name="EntitySet" type="EntitySetType" />
+            <xs:element name="Operation" type="ODataOperationType" />
+          </xs:choice>
+          <xs:element name="Filter" type="mstns:FilterType" minOccurs="0" maxOccurs="1" />
+          <xs:element name="Select" type="mstns:SelectType" minOccurs="0" maxOccurs="1" />
+          <xs:element name="OrderBy" type="mstns:OrderType" minOccurs="0" maxOccurs="1" />
+          <xs:element name="ExpandList" type="mstns:ExpandListType" minOccurs="0" maxOccurs="1" />
+          <xs:element name="TopOrSkip" type="mstns:TopOrSkipType" minOccurs="0" maxOccurs="1" />
+          <xs:element name="DataFilter" type="mstns:DataFilterType" minOccurs="0" maxOccurs="1" />
+          <xs:element name="GroupBy" type="mstns:GroupByType" minOccurs="0" maxOccurs="1" />
+          <xs:element name="AggregateList" type="mstns:AggregateListType" minOccurs="0" maxOccurs="1" />
+          <xs:element name="CustomQueryOptions" type="mstns:QueryOptionsList" minOccurs="0" maxOccurs="1" />
+        </xs:sequence>
+        <xs:attribute name="Format" type="mstns:FormatType" use="optional" default="Json" />
+        <xs:attribute name="Count" type="xs:boolean" use="optional" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="QueryOptionsList">
+    <xs:sequence>
+      <xs:element name="CustomQueryOption" type="mstns:QueryOption" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+  
+  <xs:complexType name="QueryOption">
+    <xs:simpleContent>
+      <xs:extension base="mstns:NameType">
+        <xs:attribute name="Option" type="xs:string" use="required" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="DataFilterType">
+    <xs:choice>
+      <xs:element name="Filter" type="mstns:EqualType" maxOccurs="unbounded" />
+      <xs:element name="Where" type="mstns:FilterType" />
+    </xs:choice>
+  </xs:complexType>
+
+  <xs:complexType name="ODataApiType" abstract="true" />
+
+  <xs:complexType name="ODataOperationType">
+    <xs:complexContent>
+      <xs:extension base="mstns:ODataApiType">
+        <xs:sequence>
+          <xs:element name="Arguments" type="mstns:ArgumentListType" minOccurs="0" />
+        </xs:sequence>
+        <xs:attribute name="Name" type="mstns:NameType" use="required" />
+        <xs:attribute name="EntitySet" type="mstns:NameType" use="optional" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="ArgumentListType">
+    <xs:sequence>
+      <xs:element name="Argument" type="mstns:EqualType" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="NavigationalStepType">
+    <xs:complexContent>
+      <xs:extension base="mstns:ODataApiType">
+        <xs:sequence>
+          <xs:element name="Key" type="mstns:EntityKeyType" minOccurs="0" maxOccurs="1" />
+          <xs:element name="NavigationalStep" type="mstns:NavigationalStepType" minOccurs="0" maxOccurs="1" />
+        </xs:sequence>
+        <xs:attribute name="Name" type="mstns:NameType" use="required" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="EntitySetType">
+    <xs:complexContent>
+      <xs:extension base="mstns:NavigationalStepType">
+        <xs:sequence>
+          <xs:element name="SubType" type="mstns:EntityType" minOccurs="0" maxOccurs="1" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="EntityType">
+    <xs:attribute name="Model" type="mstns:NameType" use="required" />
+    <xs:attribute name="Name" type="mstns:NameType" use="required" />
+  </xs:complexType>
+  
+  <xs:complexType name="EntityKeyType">
+    <xs:choice maxOccurs="unbounded">
+      <xs:group ref="mstns:DataTypeGroup" />
+      <xs:element name="Equals" type="EqualType" />
+    </xs:choice>
+  </xs:complexType>
+
+  <xs:complexType name="FilterType">
+    <xs:sequence>
+      <xs:group ref="mstns:PredicateGroup" />
+    </xs:sequence>
+  </xs:complexType>
+  
+  <xs:complexType name="SelectType">
+    <xs:sequence>
+      <xs:element name="Property" type="mstns:PropertyType" minOccurs="1" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="GroupByType">
+    <xs:sequence>
+      <xs:element name="GroupByReference" type="mstns:GroupByReferenceType" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ExpandListType">
+    <xs:sequence>
+      <xs:element name="Expand" type="mstns:ExpandType" minOccurs="1" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ExpandType">
+    <xs:sequence>
+      <xs:element name="Property" type="mstns:PropertyType" />
+      <xs:element name="OrderBy" type="OrderType" minOccurs="0" />
+      <xs:element name="TopOrSkip" type="TopOrSkipType" minOccurs="0" />
+      <xs:element name="Filter" type="mstns:FilterType" minOccurs="0" />
+      <xs:element name="Select" type="mstns:SelectType" minOccurs="0" />
+      <xs:element name="Expand" type="mstns:ExpandType" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+    <xs:attribute name="Count" type="xs:boolean" use="optional" />
+  </xs:complexType>
+  
+  <xs:complexType name="OrderType">
+    <xs:sequence>
+      <xs:element name="Property" type="mstns:OrderedPropertyType" minOccurs="1" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="AggregateListType">
+    <xs:sequence>
+      <xs:element name="Aggregate" type="mstns:AggregatePropertyType" minOccurs="1" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="GroupByReferenceType">
+    <xs:sequence>
+      <xs:element name="Property" type="mstns:PropertyType" maxOccurs="unbounded" />
+    </xs:sequence>
+    <xs:attribute name="GroupingType" type="GroupingType" use="optional" />
+  </xs:complexType>
+  
+  <xs:complexType name="PropertyType">
+    <xs:attribute name="Name" type="mstns:NameType" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="OrderedPropertyType">
+    <xs:complexContent>
+      <xs:extension base="mstns:PropertyType">
+        <xs:attribute name="Ascending" type="xs:boolean" use="required" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="AggregatePropertyType">
+    <xs:sequence>
+      <xs:choice>
+        <xs:group ref="mstns:PredicatableGroup" />
+        <xs:group ref="mstns:DataTypeGroup" />
+      </xs:choice>
+      <xs:element name="From" type="mstns:FromType" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+    <xs:attribute name="Alias" type="mstns:NameType" use="required" />
+  </xs:complexType>
+
+  <xs:complexType name="ExpressionType" abstract="true" />
+
+  <xs:complexType name="AnyOrAllType" abstract="true">
+    <xs:complexContent>
+      <xs:extension base="mstns:ExpressionType">
+        <xs:sequence>
+          <xs:group ref="mstns:PredicateGroup" />
+        </xs:sequence>
+        <xs:attribute name="Name" type="mstns:NameType" use="required" />
+        <xs:attribute name="Value" type="xs:boolean" use="required" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="AllType">
+    <xs:complexContent>
+      <xs:extension base="mstns:AnyOrAllType"/>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="AnyType">
+    <xs:complexContent>
+      <xs:extension base="mstns:AnyOrAllType"/>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="TopOrSkipType">
+    <xs:attribute name="Top" type="xs:unsignedInt" use="optional" />
+    <xs:attribute name="Skip" type="xs:unsignedInt" use="optional" />
+  </xs:complexType>
+
+  <xs:complexType name="ConditionType" abstract="true">
+    <xs:complexContent>
+      <xs:extension base="mstns:ExpressionType">
+        <xs:sequence minOccurs="1" maxOccurs="unbounded">
+          <xs:group ref="mstns:PredicateGroup" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="AndType">
+    <xs:complexContent>
+      <xs:extension base="mstns:ConditionType"/>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="OrType">
+    <xs:complexContent>
+      <xs:extension base="mstns:ConditionType"/>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="PredicateType" abstract="true">
+    <xs:complexContent>
+      <xs:extension base="mstns:ExpressionType">
+        <xs:sequence minOccurs="2" maxOccurs="2">
+          <xs:choice>
+            <xs:group ref="mstns:PredicatableGroup" />
+            <xs:group ref="mstns:DataTypeGroup" />
+          </xs:choice>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="ArithmeticType" abstract="true">
+    <xs:sequence minOccurs="2" maxOccurs="2">
+      <xs:choice>
+        <xs:group ref="mstns:PredicatableGroup" />
+        <xs:group ref="mstns:DataTypeGroup" />
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ItemType">
+    <xs:choice>
+      <xs:group ref="mstns:PredicatableGroup" />
+      <xs:group ref="mstns:DataTypeGroup" />
+    </xs:choice>
+  </xs:complexType>
+
+  <xs:complexType name="EqualType">
+    <xs:complexContent>
+      <xs:extension base="mstns:PredicateType"/>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="NotEqualType">
+    <xs:complexContent>
+      <xs:extension base="mstns:PredicateType"/>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="GreaterThanType">
+    <xs:complexContent>
+      <xs:extension base="mstns:PredicateType"/>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="LessThanType">
+    <xs:complexContent>
+      <xs:extension base="mstns:PredicateType"/>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="GreaterThanOrEqualType">
+    <xs:complexContent>
+      <xs:extension base="mstns:PredicateType"/>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="LessThanOrEqualType">
+    <xs:complexContent>
+      <xs:extension base="mstns:PredicateType"/>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="HasType">
+    <xs:complexContent>
+      <xs:extension base="mstns:PredicateType"/>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="InType">
+    <xs:complexContent>
+      <xs:extension base="mstns:PredicateType"/>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="AddType">
+    <xs:complexContent>
+      <xs:extension base="mstns:ArithmeticType"/>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="SubType">
+    <xs:complexContent>
+      <xs:extension base="mstns:ArithmeticType"/>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="MulType">
+    <xs:complexContent>
+      <xs:extension base="mstns:ArithmeticType"/>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="DivType">
+    <xs:complexContent>
+      <xs:extension base="mstns:ArithmeticType"/>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="DivByType">
+    <xs:complexContent>
+      <xs:extension base="mstns:ArithmeticType"/>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="ModType">
+    <xs:complexContent>
+      <xs:extension base="mstns:ArithmeticType"/>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="WithType">
+    <xs:choice>
+      <xs:group ref="mstns:PredicatableGroup" />
+      <xs:group ref="mstns:DataTypeGroup" />
+    </xs:choice>
+    <xs:attribute name="AggregateType" type="AggregateType" use="required" />
+  </xs:complexType>
+
+  <xs:complexType name="FromType">
+    <xs:complexContent>
+      <xs:extension base="mstns:PropertyType">
+        <xs:attribute name="AggregateType" type="AggregateType" use="required" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="PropertyNameType">
+    <xs:simpleContent>
+      <xs:extension base="mstns:NameType"/>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="ParameterType">
+    <xs:simpleContent>
+      <xs:extension base="mstns:NameType"/>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="FunctionType">
+    <xs:simpleContent>
+      <xs:extension base="mstns:NameType"/>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="NullType" />
+
+  <xs:complexType name="ListType">
+    <xs:choice>
+      <xs:element name="String" type="mstns:PropertyValueStringType" maxOccurs="unbounded" />
+      <xs:element name="Int" type="mstns:PropertyValueIntType" maxOccurs="unbounded" />
+      <xs:element name="Long" type="mstns:PropertyValueLongType" maxOccurs="unbounded" />
+      <xs:element name="Double" type="mstns:PropertyValueDoubleType" maxOccurs="unbounded" />
+      <xs:element name="Guid" type="mstns:PropertyValueGuidType" maxOccurs="unbounded" />
+      <xs:element name="Boolean" type="mstns:PropertyValueBooleanType" maxOccurs="unbounded" />
+      <xs:element name="DateTime" type="mstns:PropertyValueDateTimeType" maxOccurs="unbounded" />
+      <xs:element name="DateTimeOffset" type="mstns:PropertyValueDateTimeOffsetType" maxOccurs="unbounded" />
+      <xs:element name="EnumValue" type="mstns:EnumValueType" maxOccurs="unbounded" />
+      <xs:element name="TimeSpan" type="mstns:PropertyValueTimeSpanType" maxOccurs="unbounded" />
+    </xs:choice>
+  </xs:complexType>
+
+  <!-- Group defined here -->
+  <xs:group name="PredicateGroup">
+    <xs:choice>
+      <xs:element name="Equal" type="mstns:EqualType" minOccurs="1" maxOccurs="1" />
+      <xs:element name="NotEqual" type="mstns:NotEqualType" minOccurs="1" maxOccurs="1" />
+      <xs:element name="GreaterThan" type="mstns:GreaterThanType" minOccurs="1" maxOccurs="1" />
+      <xs:element name="LessThan" type="mstns:LessThanType" minOccurs="1" maxOccurs="1" />
+      <xs:element name="GreaterThanOrEqual" type="mstns:GreaterThanOrEqualType" minOccurs="1" maxOccurs="1" />
+      <xs:element name="LessThanOrEqual" type="mstns:LessThanOrEqualType" minOccurs="1" maxOccurs="1" />
+      <xs:element name="Has" type="mstns:HasType" minOccurs="1" maxOccurs="1" />
+      <xs:element name="Any" type="mstns:AnyType" minOccurs="1" maxOccurs="1" />
+      <xs:element name="All" type="mstns:AllType" minOccurs="1" maxOccurs="1" />
+      <xs:element name="And" type="mstns:AndType" minOccurs="1" maxOccurs="1" />
+      <xs:element name="Or" type="mstns:OrType" minOccurs="1" maxOccurs="1" />
+    </xs:choice>
+  </xs:group>
+
+  <xs:group name="DataTypeGroup">
+    <xs:choice>
+      <xs:element name="String" type="mstns:PropertyValueStringType" />
+      <xs:element name="Int" type="mstns:PropertyValueIntType" />
+      <xs:element name="Long" type="mstns:PropertyValueLongType" />
+      <xs:element name="Double" type="mstns:PropertyValueDoubleType" />
+      <xs:element name="Guid" type="mstns:PropertyValueGuidType" />
+      <xs:element name="Boolean" type="mstns:PropertyValueBooleanType" />
+      <xs:element name="DateTime" type="mstns:PropertyValueDateTimeType" />
+      <xs:element name="DateTimeOffset" type="mstns:PropertyValueDateTimeOffsetType" />
+      <xs:element name="EnumValue" type="mstns:EnumValueType" />
+      <xs:element name="TimeSpan" type="mstns:PropertyValueTimeSpanType" />
+      <xs:element name="Null" type="mstns:NullType" />
+      <xs:element name="List" type="mstns:ListType" />
+    </xs:choice>
+  </xs:group>
+  
+  <xs:group name="PredicatableGroup">
+    <xs:choice>
+      <xs:element name="Add" type="mstns:AddType" minOccurs="1" maxOccurs="1" />
+      <xs:element name="Sub" type="mstns:SubType" minOccurs="1" maxOccurs="1" />
+      <xs:element name="Mul" type="mstns:MulType" minOccurs="1" maxOccurs="1" />
+      <xs:element name="Div" type="mstns:DivType" minOccurs="1" maxOccurs="1" />
+      <xs:element name="DivBy" type="mstns:DivByType" minOccurs="1" maxOccurs="1" />
+      <xs:element name="Mod" type="mstns:ModType" minOccurs="1" maxOccurs="1" />
+      <xs:element name="PropertyName" type="mstns:PropertyNameType" minOccurs="1" maxOccurs="1" />
+      <xs:element name="Function" type="mstns:FunctionType" minOccurs="1" maxOccurs="1" />
+      <xs:element name="Parameter" type="mstns:ParameterType" minOccurs="1" maxOccurs="1" />
+      <xs:element name="With" type="mstns:WithType" minOccurs="1" maxOccurs="1" />
+    </xs:choice>
+  </xs:group>
+
+  <!-- Simple Types -->
+  <xs:simpleType name="NameType">
+    <xs:restriction base="xs:string"></xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="PropertyValueStringType">
+    <xs:restriction base="xs:string"></xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="PropertyValueIntType">
+    <xs:restriction base="xs:int"></xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="PropertyValueLongType">
+    <xs:restriction base="xs:long"></xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="PropertyValueDoubleType">
+    <xs:restriction base="xs:double"></xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="PropertyValueGuidType">
+    <xs:restriction base="xs:string">
+      <xs:maxLength value="38"/>
+      <xs:minLength value="36"/>
+      <xs:pattern value="\{{0,1}[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\}{0,1}"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="PropertyValueBooleanType">
+    <xs:restriction base="xs:boolean"></xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="PropertyValueDateTimeType">
+    <xs:restriction base="xs:dateTime"></xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="PropertyValueDateTimeOffsetType">
+    <xs:restriction base="xs:dateTime"></xs:restriction>
+  </xs:simpleType>
+  
+  <xs:complexType name="EnumValueType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="Type" type="xs:string" use="required" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:simpleType name="PropertyValueTimeSpanType">
+    <xs:restriction base="xs:duration"></xs:restriction>
+  </xs:simpleType>
+
+  <!-- Enumerations -->
+  <xs:simpleType name="FormatType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Json" />
+      <xs:enumeration value="JsonVerbose" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="MethodType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Get" />
+      <xs:enumeration value="Post" />
+      <xs:enumeration value="Put" />
+      <xs:enumeration value="Patch" />
+      <xs:enumeration value="Delete" />
+      <xs:enumeration value="CreateRef" />
+      <xs:enumeration value="DeleteRef" />
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="AggregateType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="None" />
+      <xs:enumeration value="Max" />
+      <xs:enumeration value="Min" />
+      <xs:enumeration value="Sum" />
+      <xs:enumeration value="Count" />
+      <xs:enumeration value="Average" />
+      <xs:enumeration value="CountDistinct" />
+      <xs:enumeration value="Merge" />
+      <xs:enumeration value="Multiple" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="GroupingType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="None" />
+      <xs:enumeration value="Rollup" />
+    </xs:restriction>
+  </xs:simpleType>
+  
+</xs:schema>

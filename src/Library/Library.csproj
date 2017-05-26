@@ -1,0 +1,379 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{D22B5996-71DC-44EB-9AC4-AA39759DACCC}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Infrastructure.DataAccess</RootNamespace>
+    <AssemblyName>Infrastructure.DataAccess</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\sln\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\sln\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="FastMember, Version=1.0.0.9, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\sln\packages\FastMember.1.0.0.11\lib\net40\FastMember.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Azure.SqlDatabase.ElasticScale.Client, Version=1.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\sln\packages\Microsoft.Azure.SqlDatabase.ElasticScale.Client.1.3.2\lib\net45\Microsoft.Azure.SqlDatabase.ElasticScale.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.OData.Core, Version=7.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\sln\packages\Microsoft.OData.Core.7.2.0\lib\netstandard1.1\Microsoft.OData.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.OData.Edm, Version=7.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\sln\packages\Microsoft.OData.Edm.7.2.0\lib\netstandard1.1\Microsoft.OData.Edm.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling, Version=6.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\sln\packages\EnterpriseLibrary.TransientFaultHandling.6.0.1304.0\lib\portable-net45+win+wp8\Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Data, Version=6.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\sln\packages\EnterpriseLibrary.TransientFaultHandling.Data.6.0.1304.1\lib\NET45\Microsoft.Practices.EnterpriseLibrary.TransientFaultHandling.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAzure.Configuration, Version=1.8.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\sln\packages\Microsoft.WindowsAzure.ConfigurationManager.1.8.0.0\lib\net35-full\Microsoft.WindowsAzure.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAzure.Storage, Version=4.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\sln\packages\WindowsAzure.Storage.4.3.0\lib\net40\Microsoft.WindowsAzure.Storage.dll</HintPath>
+    </Reference>
+    <Reference Include="MySql.Data, Version=6.9.9.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\sln\packages\MySql.Data.6.9.9\lib\net45\MySql.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\sln\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Ninject, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\sln\packages\Ninject.3.2.2.0\lib\net45-full\Ninject.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.Formatting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\sln\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\sln\packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.OData, Version=6.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\sln\packages\Microsoft.AspNet.OData.6.0.0\lib\net45\System.Web.OData.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CacheBase.cs" />
+    <Compile Include="Apply\ApplyParsingHelper.cs" />
+    <Compile Include="ChangeLog\ChangeLogGenerator.cs" />
+    <Compile Include="ChangeLog\IChangeLog.cs" />
+    <Compile Include="ChangeLog\IBaseEntity.cs" />
+    <Compile Include="ChangeLog\IUser.cs" />
+    <Compile Include="CommonNinjectModule.cs" />
+    <Compile Include="Configuration\AzureBlobSet.cs" />
+    <Compile Include="Configuration\ConfigurationCache.cs" />
+    <Compile Include="Configuration\Dimension.cs" />
+    <Compile Include="Configuration\Feed.cs" />
+    <Compile Include="Configuration\EntityType.cs" />
+    <Compile Include="Configuration\IConfigurationCache.cs" />
+    <Compile Include="Configuration\IHierarchical.cs" />
+    <Compile Include="Configuration\IngestPipeline.Designer.cs" />
+    <Compile Include="Configuration\MappedDataReader.cs" />
+    <Compile Include="Configuration\SourceTargetPath.cs" />
+    <Compile Include="Configuration\Stream.cs" />
+    <Compile Include="DataAccessConstants.cs" />
+    <Compile Include="DataAccessTelemetry.cs" />
+    <Compile Include="DynamicQuery\IExecutor.cs" />
+    <Compile Include="DynamicQuery\AggregateColumnReference.cs" />
+    <Compile Include="DynamicQuery\AggregateHelper.cs" />
+    <Compile Include="DynamicQuery\AggregateResult.cs" />
+    <Compile Include="DynamicQuery\IProjectionHelper.cs" />
+    <Compile Include="DynamicQuery\CompositeNode.cs" />
+    <Compile Include="DynamicQuery\DynamicQueryable.cs" />
+    <Compile Include="DynamicQuery\IgnoreAttribute.cs" />
+    <Compile Include="DynamicQuery\MySql\MySqlQueryExecution.cs" />
+    <Compile Include="DynamicQuery\MySql\MySqlAnyOrAllSerializer.cs" />
+    <Compile Include="DynamicQuery\MySql\MySqlFilterSerializer.cs" />
+    <Compile Include="DynamicQuery\MySql\MySqlQuerySerializer.cs" />
+    <Compile Include="DynamicQuery\MySql\MySqlSerializer.cs" />
+    <Compile Include="DynamicQuery\MySql\MySqlProjectionHelper.cs" />
+    <Compile Include="DynamicQuery\MySql\MySqlBulkWriter.cs" />
+    <Compile Include="DynamicQuery\MySql\MySqlSerializationContext.cs" />
+    <Compile Include="DynamicQuery\QueryProlog.cs" />
+    <Compile Include="DynamicQuery\Result.cs" />
+    <Compile Include="DynamicQuery\ScriptQuery.cs" />
+    <Compile Include="DynamicQuery\SqlFormatter.cs" />
+    <Compile Include="DynamicQuery\IQueryBuilder.cs" />
+    <Compile Include="DynamicQuery\ParameterContext.cs" />
+    <Compile Include="DynamicQuery\QueryBuilder.cs" />
+    <Compile Include="DynamicQuery\QueryBuilderSettings.cs" />
+    <Compile Include="DynamicQuery\QueryGroupBy.cs" />
+    <Compile Include="DynamicQuery\QueryTable.cs" />
+    <Compile Include="DynamicQuery\QueryOrder.cs" />
+    <Compile Include="DynamicQuery\QueryTop.cs" />
+    <Compile Include="DynamicQuery\QueryJoin.cs" />
+    <Compile Include="DynamicQuery\QuerySource.cs" />
+    <Compile Include="DynamicQuery\QueryColumn.cs" />
+    <Compile Include="DynamicQuery\SelectQuery.cs" />
+    <Compile Include="DynamicQuery\TypeCache.cs" />
+    <Compile Include="DynamicQuery\UnionQuery.cs" />
+    <Compile Include="DynamicQuery\TypeConfiguration\ExpressionExtensions.cs" />
+    <Compile Include="DynamicQuery\TypeConfiguration\NavigationProperty.cs" />
+    <Compile Include="DynamicQuery\TypeConfiguration\ManyToManyMappingConfiguration.cs" />
+    <Compile Include="DynamicQuery\TypeConfiguration\OneToOneMappingConfiguration.cs" />
+    <Compile Include="DynamicQuery\TypeConfiguration\SingleNavigationProperty.cs" />
+    <Compile Include="DynamicQuery\TypeConfiguration\ManyNavigationProperty.cs" />
+    <Compile Include="DynamicQuery\TypeConfiguration\ManyToManyNavigationProperty.cs" />
+    <Compile Include="DynamicQuery\TypeConfiguration\OneToManyNavigationProperty.cs" />
+    <Compile Include="DynamicQuery\TypeConfiguration\OneToOneNavigationProperty.cs" />
+    <Compile Include="DynamicQuery\TypeConfiguration\MappingConfiguration.cs" />
+    <Compile Include="DynamicQuery\TypeConfiguration\OneToManyMappingConfiguration.cs" />
+    <Compile Include="DynamicQuery\TypeConfiguration\TypeConfiguration.cs" />
+    <Compile Include="DynamicQuery\TSql\SqlBulkWriter.cs" />
+    <Compile Include="DynamicQuery\TSql\TSqlAnyOrAllSerializer.cs" />
+    <Compile Include="DynamicQuery\TSql\TSqlFilterSerializer.cs" />
+    <Compile Include="DynamicQuery\TSql\TSqlProjectionHelper.cs" />
+    <Compile Include="DynamicQuery\TSql\TSqlQueryExecution.cs" />
+    <Compile Include="DynamicQuery\TSql\TSqlQuerySerializer.cs" />
+    <Compile Include="DynamicQuery\TSql\TSqlSerializer.cs" />
+    <Compile Include="DynamicQuery\TSql\SqlSerializationContext.cs" />
+    <Compile Include="DynamicQuery\Writes\ChangedByAttribute.cs" />
+    <Compile Include="DynamicQuery\Writes\BulkWriterSettings.cs" />
+    <Compile Include="DynamicQuery\Writes\InsertQuery.cs" />
+    <Compile Include="DynamicQuery\Writes\DeleteQuery.cs" />
+    <Compile Include="DynamicQuery\Writes\DeleteQueryBuilder.cs" />
+    <Compile Include="DynamicQuery\Writes\IExecuteTransaction.cs" />
+    <Compile Include="DynamicQuery\Writes\MergeQuery.cs" />
+    <Compile Include="DynamicQuery\Writes\MergeQueryBuilder.cs" />
+    <Compile Include="DynamicQuery\Writes\IBulkWriter.cs" />
+    <Compile Include="DynamicQuery\Writes\InsertedTimeAttribute.cs" />
+    <Compile Include="DynamicQuery\Writes\SequenceExecutor.cs" />
+    <Compile Include="DynamicQuery\Writes\SupplementalValue.cs" />
+    <Compile Include="DynamicQuery\Writes\UpdatedTimeAttribute.cs" />
+    <Compile Include="DynamicQuery\Writes\WriterReader.cs" />
+    <Compile Include="DynamicQuery\Writes\WriteSet.cs" />
+    <Compile Include="ElasticScale\ShardMapManagementAlt.cs" />
+    <Compile Include="ElasticScale\SpecifiedShardPolicy.cs" />
+    <Compile Include="ElasticScale\LeastPopulatedPolicy.cs" />
+    <Compile Include="ElasticScale\EvenOddPolicy.cs" />
+    <Compile Include="ElasticScale\IAddShardletPolicy.cs" />
+    <Compile Include="ElasticScale\ShardIdentifier.cs" />
+    <Compile Include="ElasticScale\Shardlet.cs" />
+    <Compile Include="ElasticScale\ShardletPolicyFactory.cs" />
+    <Compile Include="ElasticScale\ShardMapManagement.cs" />
+    <Compile Include="Filtering\ArithmeticType.cs" />
+    <Compile Include="Filtering\AuthParameters.cs" />
+    <Compile Include="Filtering\BatchResponse.cs" />
+    <Compile Include="Filtering\BatchResponseReader.cs" />
+    <Compile Include="Filtering\ChangeSetType.cs" />
+    <Compile Include="Filtering\FunctionHelper.cs" />
+    <Compile Include="Filtering\GroupByReferenceType.cs" />
+    <Compile Include="Filtering\InType.cs" />
+    <Compile Include="Filtering\HasType.cs" />
+    <Compile Include="Filtering\HttpWebRequestExtensions.cs" />
+    <Compile Include="Filtering\IStronglyNamed.cs" />
+    <Compile Include="Filtering\IBatchable.cs" />
+    <Compile Include="Filtering\FilteredReader.cs" />
+    <Compile Include="Filtering\ParsedPredicate.cs" />
+    <Compile Include="Filtering\UserDefinedFunction.cs" />
+    <Compile Include="Filtering\WithType.cs" />
+    <Compile Include="Lambda\ExpressionLibrary.cs" />
+    <Compile Include="Lambda\ExpressionProcessor.cs" />
+    <Compile Include="Lambda\IContext.cs" />
+    <Compile Include="Lambda\LambdaAndExpressionProcessor.cs" />
+    <Compile Include="Lambda\LambdaEqualExpressionProcessor.cs" />
+    <Compile Include="Lambda\LambdaGreaterThanExpressionProcessor.cs" />
+    <Compile Include="Lambda\LambdaLessThanExpressionProcessor.cs" />
+    <Compile Include="Lambda\LambdaOrExpressionProcessor.cs" />
+    <Compile Include="Lambda\LambdaSimpleExpressionProcessor.cs" />
+    <Compile Include="Lambda\SimpleParameter.cs" />
+    <Compile Include="Lambda\StandardLambdaContext.cs" />
+    <Compile Include="DynamicQuery\DDL\CheckConstraint.cs" />
+    <Compile Include="DynamicQuery\DDL\Column.cs" />
+    <Compile Include="DynamicQuery\DDL\ColumnReference.cs" />
+    <Compile Include="DynamicQuery\DDL\DefaultConstraint.cs" />
+    <Compile Include="DynamicQuery\DDL\ForeignKey.cs" />
+    <Compile Include="DynamicQuery\DDL\Index.cs" />
+    <Compile Include="DynamicQuery\DDL\IndexColumn.cs" />
+    <Compile Include="DynamicQuery\DDL\ISqlSerializationContext.cs" />
+    <Compile Include="DynamicQuery\DDL\Owner.cs" />
+    <Compile Include="DynamicQuery\DDL\Partition.cs" />
+    <Compile Include="DynamicQuery\DDL\SchemaGenerator.cs" />
+    <Compile Include="DynamicQuery\DDL\SchemaObject.cs" />
+    <Compile Include="DynamicQuery\DDL\Table.cs" />
+    <Compile Include="DynamicQuery\DDL\TableReference.cs" />
+    <Compile Include="Filtering\BatchedQueryType.cs" />
+    <Compile Include="Filtering\BatchRequestType.cs" />
+    <Compile Include="Filtering\ExpandType.cs" />
+    <Compile Include="Filtering\ODataOperationType.cs" />
+    <Compile Include="Filtering\AllType.cs" />
+    <Compile Include="Filtering\AndType.cs" />
+    <Compile Include="Filtering\AnyOrAllType.cs" />
+    <Compile Include="Filtering\AnyType.cs" />
+    <Compile Include="Filtering\ConditionType.cs" />
+    <Compile Include="Filtering\DataFilterParsingHelper.cs" />
+    <Compile Include="Filtering\EntityKeyType.cs" />
+    <Compile Include="Filtering\EntitySetType.cs" />
+    <Compile Include="Filtering\EntityType.cs" />
+    <Compile Include="Filtering\EqualType.cs" />
+    <Compile Include="Filtering\ExpressionType.cs" />
+    <Compile Include="Filtering\FilterType.cs" />
+    <Compile Include="Filtering\FunctionType.cs" />
+    <Compile Include="Filtering\GreaterThanOrEqualType.cs" />
+    <Compile Include="Filtering\GreaterThanType.cs" />
+    <Compile Include="Filtering\IPredicatable.cs" />
+    <Compile Include="Filtering\LessThanOrEqualType.cs" />
+    <Compile Include="Filtering\LessThanType.cs" />
+    <Compile Include="Filtering\NavigationalStepType.cs" />
+    <Compile Include="Filtering\NotEqualType.cs" />
+    <Compile Include="Filtering\OdataExpressionModel.cs" />
+    <Compile Include="Filtering\OdataQueryType.cs" />
+    <Compile Include="Filtering\OrderedPropertyType.cs" />
+    <Compile Include="Filtering\OrType.cs" />
+    <Compile Include="Filtering\ParameterType.cs" />
+    <Compile Include="Filtering\PredicateType.cs" />
+    <Compile Include="Filtering\PropertyNameType.cs" />
+    <Compile Include="Filtering\TopOrSkipType.cs" />
+    <Compile Include="Service\CacheNotReadyException.cs" />
+    <Compile Include="Service\Extensions.cs" />
+    <Compile Include="Service\IMessageLogger.cs" />
+    <Compile Include="Service\IMessageProcessor.cs" />
+    <Compile Include="Service\ConfigurationHelper.cs" />
+    <Compile Include="Service\DatasourceAttribute.cs" />
+    <Compile Include="Service\DatasourceWrapper.cs" />
+    <Compile Include="Service\DefaultTransaction.cs" />
+    <Compile Include="Service\GenericController.cs" />
+    <Compile Include="Service\IController.cs" />
+    <Compile Include="Service\IDatasourceAwareController.cs" />
+    <Compile Include="Service\IErrorHandler.cs" />
+    <Compile Include="Service\IInitializable.cs" />
+    <Compile Include="Service\IMetadataProvider.cs" />
+    <Compile Include="Service\IDatasource.cs" />
+    <Compile Include="Service\InfrastructureConfig.cs">
+      <DependentUpon>InfrastructureConfig.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Service\InfrastructureContainer.cs" />
+    <Compile Include="Service\InfrastructureController.cs" />
+    <Compile Include="Service\InfrastructureKey.cs" />
+    <Compile Include="Service\InfrastructureQueryProvider.cs" />
+    <Compile Include="Service\InfrastructureQueryable.cs" />
+    <Compile Include="Service\InvalidDataFilterException.cs" />
+    <Compile Include="Service\Container.cs" />
+    <Compile Include="Service\IReferenceManager.cs" />
+    <Compile Include="Service\IUserInRoleHelper.cs" />
+    <Compile Include="Service\ITransaction.cs" />
+    <Compile Include="Service\ParsedOperation.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Service\QueryContext.cs" />
+    <Compile Include="Service\QueryTranslator.cs" />
+    <Compile Include="Service\WriteRequest.cs" />
+    <Compile Include="Store\AutoGeneratedProxy.cs" />
+    <Compile Include="Store\AzureTableProxy.cs" />
+    <Compile Include="Store\DefaultStoreType.cs" />
+    <Compile Include="Store\DatabaseType.cs" />
+    <Compile Include="Store\DataContext.cs" />
+    <Compile Include="Store\DataContextFactory.cs" />
+    <Compile Include="Store\DbContextProxy.cs" />
+    <Compile Include="Store\DynamicNonQuery.cs" />
+    <Compile Include="Store\DynamicProcedure.cs" />
+    <Compile Include="Store\DynamicProcedureMultiple.cs" />
+    <Compile Include="Store\ExtensionMethods.cs" />
+    <Compile Include="Store\FederatedMySqlStore.cs" />
+    <Compile Include="Store\FederatedSqlStore.cs" />
+    <Compile Include="Store\IConnectionFactory.cs" />
+    <Compile Include="Store\InfrastructureDelta.cs" />
+    <Compile Include="Store\IParameter.cs" />
+    <Compile Include="Store\IPropertyBag.cs" />
+    <Compile Include="Store\IStore.cs" />
+    <Compile Include="Store\IDataContext.cs" />
+    <Compile Include="Store\MultipleObjectContextProxy.cs" />
+    <Compile Include="Store\MultipleDbContextProxy.cs" />
+    <Compile Include="Store\ObjectContextProxy.cs" />
+    <Compile Include="Store\Parameter.cs" />
+    <Compile Include="Store\SqlErrorDetectionStrategy.cs" />
+    <Compile Include="Store\MySqlStore.cs" />
+    <Compile Include="Store\SqlStore.cs" />
+    <Compile Include="Store\StoredProcedure.cs" />
+    <Compile Include="Store\StoredProcedureBase.cs" />
+    <Compile Include="Store\StoredProcedureMultiple.cs" />
+    <Compile Include="Store\StoredProcedureNonQuery.cs" />
+    <Compile Include="Service\WebMethodUrlHelper.cs" />
+    <Compile Include="Store\StoreTelemetryEvent.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Configuration\IngestPipeline.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Filtering\ODataExpressionModel.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Infrastructure.DataAccess.nuspec">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Service\InfrastructureConfig.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+    <Exec Command="xcopy $(TargetDir)$(AssemblyName).dll $(SolutionDir)nuget\$(AssemblyName)\lib\net45\ /Y" />
+    <Exec Command="xcopy $(TargetDir)$(AssemblyName).nuspec $(SolutionDir)nuget\$(AssemblyName)\ /Y" />
+    <Exec Command="nuget pack $(SolutionDir)nuget\$(AssemblyName)\$(AssemblyName).nuspec -outputdirectory $(SolutionDir)nuget\ -symbols" />
+  </Target>
+</Project>

@@ -1,0 +1,236 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://schemas.microsoft.com/services/telemetry/configuration/2013/store"
+           xmlns:tns="http://schemas.microsoft.com/services/telemetry/configuration/2013/store">
+
+  <xs:element name="InfrastructureConfig" type="tns:InfrastructureConfigType" />
+
+  <xs:complexType name="ConfigurationItemType" abstract="true">
+    <xs:attribute name="Name" type="tns:NameType" use="required" />
+  </xs:complexType>
+
+  <xs:complexType name="ServiceActionAccessType">
+    <xs:complexContent>
+      <xs:extension base="tns:ConfigurationItemType">
+        <xs:attribute name="Access" type="tns:ServiceActionAccessibility" use="required" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="ServiceOperationAccessType">
+    <xs:complexContent>
+      <xs:extension base="tns:ConfigurationItemType">
+        <xs:attribute name="Access" type="tns:ServiceOperationAccessibility" use="required" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="EntitySetAccessType">
+    <xs:complexContent>
+      <xs:extension base="tns:ConfigurationItemType">
+        <xs:attribute name="Access" type="tns:EntitySetAccessibility" use="required" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="PagingConfigurationItemType">
+    <xs:complexContent>
+      <xs:extension base="tns:ConfigurationItemType">
+        <xs:attribute name="Size" type="xs:int" use="required" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="ServiceActionsCollectionType">
+    <xs:sequence>
+      <xs:element name="ServiceAction" type="tns:ServiceActionAccessType" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ServiceOperationsCollectionType">
+    <xs:sequence>
+      <xs:element name="ServiceOperation" type="tns:ServiceOperationAccessType" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="EntitySetsCollectionType">
+    <xs:sequence>
+      <xs:element name="EntitySet" type="tns:EntitySetAccessType" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="AccessConfigurationType">
+    <xs:sequence>
+      <xs:element name="ServiceOperations" type="tns:ServiceOperationsCollectionType" minOccurs="0" />
+      <xs:element name="ServiceActions" type="tns:ServiceActionsCollectionType" minOccurs="0" />
+      <xs:element name="EntitySets" type="tns:EntitySetsCollectionType" minOccurs="0" />
+    </xs:sequence>
+    <xs:attribute name="WriteEnabled" type="xs:boolean" use="optional" />
+  </xs:complexType>
+
+  <xs:complexType name="PagingConfigurationType">
+    <xs:sequence>
+      <xs:element name="EntitySet" type="tns:PagingConfigurationItemType" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="DataFilterParameterType">
+    <xs:attribute name="Name" type="xs:token" use="required" />
+    <xs:attribute name="DataType" type="tns:DataType" use="required" />
+    <xs:attribute name="Required" type="xs:boolean" use="required" />
+  </xs:complexType>
+
+  <xs:complexType name="EntitySetDataFilterType">
+    <xs:complexContent>
+      <xs:extension base="tns:DataFilterConfigurationItemType" />
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="OperationDataFilterType">
+    <xs:complexContent>
+      <xs:extension base="tns:DataFilterConfigurationItemType" />
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="DataFilterConfigurationItemType" abstract="true">
+    <xs:complexContent>
+      <xs:extension base="tns:ConfigurationItemType">
+        <xs:sequence>
+          <xs:element name="Parameter" type="tns:DataFilterParameterType" maxOccurs="unbounded" />
+        </xs:sequence>
+        <xs:attribute name="TargetEntitySet" type="xs:Name" use="optional" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="DataFilterConfigurationType">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="EntitySet" type="tns:EntitySetDataFilterType" />
+      <xs:element name="Operation" type="tns:OperationDataFilterType" />
+    </xs:choice>
+  </xs:complexType>
+  
+  <xs:complexType name="ObsoletedConfigurationItemType" abstract="true">
+    <xs:complexContent>
+      <xs:extension base="tns:ConfigurationItemType">
+        <xs:attribute name="RemovalEstimate" type="xs:date" use="required" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="EntitySetObsoletedType">
+    <xs:complexContent>
+      <xs:extension base="tns:ObsoletedConfigurationItemType" />
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="OperationObsoletedType">
+    <xs:complexContent>
+      <xs:extension base="tns:ObsoletedConfigurationItemType" />
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="ObsoletedConfigurationType">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="EntitySet" type="tns:EntitySetObsoletedType" />
+      <xs:element name="Operation" type="tns:OperationObsoletedType" />
+    </xs:choice>
+  </xs:complexType>
+  
+  <xs:complexType name="GroupByItemType">
+    <xs:attribute name="Name" type="xs:token" use="required" />
+  </xs:complexType>
+
+  <xs:complexType name="GroupByConfigurationItemType">
+    <xs:complexContent>
+      <xs:extension base="tns:ConfigurationItemType">
+        <xs:sequence>
+          <xs:element name="Item" type="tns:GroupByItemType" maxOccurs="unbounded" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="OperationGroupByType">
+    <xs:complexContent>
+      <xs:extension base="tns:GroupByConfigurationItemType" />
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="EntitySetGroupByType">
+    <xs:complexContent>
+      <xs:extension base="tns:GroupByConfigurationItemType" />
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="GroupByConfigurationType">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="Operation" type="tns:OperationGroupByType" />
+      <xs:element name="EntitySet" type="tns:EntitySetGroupByType" />
+    </xs:choice>
+  </xs:complexType>
+
+  <xs:complexType name="InfrastructureConfigType">
+    <xs:sequence>
+      <xs:element name="Access" type="tns:AccessConfigurationType" minOccurs="1" />
+      <xs:element name="PagingSizes" type="tns:PagingConfigurationType" minOccurs="1" />
+      <xs:element name="DataFilters" type="tns:DataFilterConfigurationType" minOccurs="1" />
+      <xs:element name="Obsoleted" type="tns:ObsoletedConfigurationType" minOccurs="0" />
+      <xs:element name="GroupBy" type="tns:GroupByConfigurationType" minOccurs="0" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="ServiceActionAccessibility">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="None"/>
+      <xs:enumeration value="Invoke"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ServiceOperationAccessibility">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="All"/>
+      <xs:enumeration value="AllRead"/>
+      <xs:enumeration value="None"/>
+      <xs:enumeration value="OverrideEntitySetRights"/>
+      <xs:enumeration value="ReadMultiple"/>
+      <xs:enumeration value="ReadSingle"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="EntitySetAccessibility">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="All"/>
+      <xs:enumeration value="AllRead"/>
+      <xs:enumeration value="AllWrite"/>
+      <xs:enumeration value="None"/>
+      <xs:enumeration value="ReadMultiple"/>
+      <xs:enumeration value="ReadSingle"/>
+      <xs:enumeration value="WriteAppend"/>
+      <xs:enumeration value="WriteDelete"/>
+      <xs:enumeration value="WriteMerge"/>
+      <xs:enumeration value="WriteReplace"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="Asterisk">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="*" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="NameType">
+    <xs:union memberTypes="xs:NCName tns:Asterisk" />
+  </xs:simpleType>
+
+  <xs:simpleType name="DataType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="string"/>
+      <xs:enumeration value="int"/>
+      <xs:enumeration value="bool"/>
+      <xs:enumeration value="long"/>
+      <xs:enumeration value="datetimeoffset"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+</xs:schema>
